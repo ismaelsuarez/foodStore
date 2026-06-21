@@ -58,6 +58,22 @@ public class DetallePedido extends Base {
         return producto;
     }
 
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public void setSubtotal(Double subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public void setValido(Boolean valido) {
+        this.valido = valido;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
     @Override
     public String toString() {
         return "DetallePedido{" +
