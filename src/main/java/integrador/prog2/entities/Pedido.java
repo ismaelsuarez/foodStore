@@ -2,7 +2,7 @@ package integrador.prog2.entities;
 
 import integrador.prog2.enums.Estado;
 import integrador.prog2.enums.FormaPago;
-import integrador.prog2.interfaces.Calculable;
+import integrador.prog2.entities.Calculable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class Pedido extends Base implements Calculable {
     public Pedido(FormaPago formaPago) {
         super();
         this.fecha = LocalDate.now();
-        this.estado = Estado.INVALIDO;
+        this.estado = Estado.CANCELADO;
         this.total = 0.0;
         this.formaPago = formaPago;
         this.detallesPedido = new ArrayList<>();
@@ -86,7 +86,7 @@ public class Pedido extends Base implements Calculable {
 
     private void validarPedido() {
         if (detallesPedido.isEmpty()) {
-            this.estado = Estado.INVALIDO;
+            this.estado = Estado.CANCELADO;
             return;
         }
 
@@ -99,7 +99,7 @@ public class Pedido extends Base implements Calculable {
             }
         }
 
-        this.estado = tieneDetalleValido ? Estado.PENDIENTE : Estado.INVALIDO;
+        this.estado = tieneDetalleValido ? Estado.PENDIENTE : Estado.CANCELADO;
     }
 
     @Override
