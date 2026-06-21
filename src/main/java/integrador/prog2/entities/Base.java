@@ -2,25 +2,26 @@ package integrador.prog2.entities;
 
 import java.time.LocalDateTime;
 
+/**
+ * Clase con los datos comunes de las entidades.
+ */
 public abstract class Base {
-    private static long contadorId = 1;
 
     private Long id;
     private boolean eliminado;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     protected Base() {
-        this.id = generarId();
         this.eliminado = false;
-        this.createAt = LocalDateTime.now();
-    }
-
-    public static synchronized Long generarId() {
-        return contadorId++;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public boolean isEliminado() {
@@ -31,7 +32,11 @@ public abstract class Base {
         this.eliminado = eliminado;
     }
 
-    public LocalDateTime getCreateAt() {
-        return createAt;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
