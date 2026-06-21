@@ -1,8 +1,8 @@
 package integrador.prog2.entities;
 
-import enumerables.Estado;
-import enumerables.FormaPago;
-import interfaces.Calculable;
+import integrador.prog2.enums.Estado;
+import integrador.prog2.enums.FormaPago;
+import integrador.prog2.interfaces.Calculable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -135,15 +135,32 @@ public class Pedido extends Base implements Calculable {
         return detallesPedido;
     }
 
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+
+    public void setFormaPago(FormaPago formaPago) {
+        this.formaPago = formaPago;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
     @Override
-    public String toString() {
-        return "Pedido{" +
-                "id=" + getId() +
-                ", fecha=" + fecha +
-                ", estado=" + estado +
-                ", total=" + total +
-                ", formaPago=" + formaPago +
-                ", detallesPedido=" + detallesPedido +
-                '}';
+    public Pedido actualizar(Pedido pedidoActualizado) {
+
+        Pedido pedido = buscarPorId(pedidoActualizado.getId());
+
+        if (pedido != null) {
+
+            pedido.setEstado(pedidoActualizado.getEstado());
+            pedido.setFormaPago(pedidoActualizado.getFormaPago());
+            pedido.setTotal(pedidoActualizado.getTotal());
+
+            return pedido;
+        }
+
+        return null;
     }
 }
