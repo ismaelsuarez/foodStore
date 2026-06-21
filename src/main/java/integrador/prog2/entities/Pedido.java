@@ -146,21 +146,5 @@ public class Pedido extends Base implements Calculable {
     public void setTotal(Double total) {
         this.total = total;
     }
-
-    @Override
-    public Pedido actualizar(Pedido pedidoActualizado) {
-
-        Pedido pedido = buscarPorId(pedidoActualizado.getId());
-
-        if (pedido != null) {
-
-            pedido.setEstado(pedidoActualizado.getEstado());
-            pedido.setFormaPago(pedidoActualizado.getFormaPago());
-            pedido.setTotal(pedidoActualizado.getTotal());
-
-            return pedido;
-        }
-
-        return null;
-    }
 }
+
