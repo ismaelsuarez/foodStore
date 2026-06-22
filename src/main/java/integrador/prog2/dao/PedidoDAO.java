@@ -1,7 +1,9 @@
 package integrador.prog2.dao;
 
 import integrador.prog2.config.ConexionDB;
+import integrador.prog2.entities.DetallePedido;
 import integrador.prog2.entities.Pedido;
+import integrador.prog2.entities.Usuario;
 import integrador.prog2.enums.Estado;
 import integrador.prog2.enums.FormaPago;
 import integrador.prog2.exception.ErrorBaseDatos;
@@ -13,8 +15,10 @@ import java.util.Optional;
 
 public class PedidoDAO implements IBaseDAO<Pedido> {
 
+    private final DetallePedidoDAO detallePedidoDAO = new DetallePedidoDAO();
+
     private static final String SELECT_BASE = """
-            SELECT id, fecha, estado, total, forma_pago, eliminado, created_at
+            SELECT id, fecha, estado, total, forma_pago, usuario_id, eliminado, created_at
             FROM pedido
             """;
 
@@ -62,28 +66,45 @@ public class PedidoDAO implements IBaseDAO<Pedido> {
     @Override
     public Pedido save(Pedido pedido) {
         String sql = """
-                INSERT INTO pedido (fecha, estado, total, forma_pago)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO pedido (fecha, estado, total, forma_pago, usuario_id)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
-        try (Connection connection = ConexionDB.getConexion();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        validarPedido(pedido);
+        pedido.calcularTotal();
 
-            statement.setDate(1, Date.valueOf(pedido.getFecha()));
-            statement.setString(2, pedido.getEstado().name());
-            statement.setDouble(3, pedido.getTotal());
-            statement.setString(4, pedido.getFormaPago().name());
+        try (Connection connection = ConexionDB.getConexion()) {
+            connection.setAutoCommit(false);
 
-            statement.executeUpdate();
+            try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                statement.setDate(1, Date.valueOf(pedido.getFecha()));
+                statement.setString(2, pedido.getEstado().name());
+                statement.setDouble(3, pedido.getTotal());
+                statement.setString(4, pedido.getFormaPago().name());
+                statement.setLong(5, pedido.getUsuario().getId());
 
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    pedido.setId(generatedKeys.getLong(1));
-                    return pedido;
+                statement.executeUpdate();
+
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        pedido.setId(generatedKeys.getLong(1));
+                    } else {
+                        throw new ErrorBaseDatos("No se obtuvo el id generado para el pedido.");
+                    }
                 }
-                throw new ErrorBaseDatos("No se obtuvo el id generado para el pedido.");
-            }
 
+                for (DetallePedido detalle : pedido.getDetallesPedido()) {
+                    if (Boolean.TRUE.equals(detalle.getValido())) {
+                        detallePedidoDAO.saveForPedido(connection, pedido.getId(), detalle);
+                    }
+                }
+
+                connection.commit();
+                return pedido;
+            } catch (SQLException | RuntimeException e) {
+                rollback(connection);
+                throw new ErrorBaseDatos("No se pudo crear el pedido.", e);
+            }
         } catch (SQLException e) {
             throw new ErrorBaseDatos("No se pudo crear el pedido.", e);
         }
@@ -124,11 +145,23 @@ public class PedidoDAO implements IBaseDAO<Pedido> {
                 WHERE id = ? AND eliminado = FALSE
                 """;
 
-        try (Connection connection = ConexionDB.getConexion();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = ConexionDB.getConexion()) {
+            connection.setAutoCommit(false);
 
-            statement.setLong(1, id);
-            return statement.executeUpdate() > 0;
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setLong(1, id);
+                boolean eliminado = statement.executeUpdate() > 0;
+
+                if (eliminado) {
+                    detallePedidoDAO.deleteByPedidoId(connection, id);
+                }
+
+                connection.commit();
+                return eliminado;
+            } catch (SQLException | RuntimeException e) {
+                rollback(connection);
+                throw new ErrorBaseDatos("No se pudo eliminar el pedido.", e);
+            }
 
         } catch (SQLException e) {
             throw new ErrorBaseDatos("No se pudo eliminar el pedido.", e);
@@ -141,9 +174,18 @@ public class PedidoDAO implements IBaseDAO<Pedido> {
         Pedido pedido = new Pedido(formaPago);
 
         pedido.setId(resultSet.getLong("id"));
+        Date fecha = resultSet.getDate("fecha");
+        if (fecha != null) {
+            pedido.setFecha(fecha.toLocalDate());
+        }
         pedido.setEstado(Estado.valueOf(resultSet.getString("estado")));
         pedido.setTotal(resultSet.getDouble("total"));
         pedido.setEliminado(resultSet.getBoolean("eliminado"));
+
+        Usuario usuario = new Usuario();
+        usuario.setId(resultSet.getLong("usuario_id"));
+        pedido.setUsuario(usuario);
+        pedido.getDetallesPedido().addAll(detallePedidoDAO.findByPedidoId(pedido.getId()));
 
         Timestamp createdAt = resultSet.getTimestamp("created_at");
         if (createdAt != null) {
@@ -151,5 +193,23 @@ public class PedidoDAO implements IBaseDAO<Pedido> {
         }
 
         return pedido;
+    }
+
+    private void validarPedido(Pedido pedido) {
+        if (pedido.getUsuario() == null || pedido.getUsuario().getId() == null) {
+            throw new ErrorBaseDatos("El pedido debe tener un usuario.");
+        }
+
+        if (pedido.getDetallesPedido().isEmpty()) {
+            throw new ErrorBaseDatos("El pedido debe tener al menos un detalle.");
+        }
+    }
+
+    private void rollback(Connection connection) {
+        try {
+            connection.rollback();
+        } catch (SQLException e) {
+            throw new ErrorBaseDatos("No se pudo deshacer la operacion.", e);
+        }
     }
 }

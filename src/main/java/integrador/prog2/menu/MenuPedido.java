@@ -1,10 +1,15 @@
 package integrador.prog2.menu;
 
-import integrador.prog2.service.ServicioPedido;
-
-import java.util.Scanner;
+import integrador.prog2.entities.Pedido;
 import integrador.prog2.enums.Estado;
 import integrador.prog2.enums.FormaPago;
+import integrador.prog2.exception.ErrorAplicacion;
+import integrador.prog2.exception.ErrorBaseDatos;
+import integrador.prog2.service.ServicioPedido;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class MenuPedido {
 
@@ -31,14 +36,18 @@ public class MenuPedido {
 
             opcion = leerEntero();
 
-            switch (opcion) {
-                case 1 -> listarPedidos();
-                case 2 -> crearPedido();
-                case 3 -> actualizarEstado();
-                case 4 -> actualizarFormaPago();
-                case 5 -> eliminarPedido();
-                case 0 -> System.out.println("Volviendo al menú principal...");
-                default -> System.out.println("Opción inválida.");
+            try {
+                switch (opcion) {
+                    case 1 -> listarPedidos();
+                    case 2 -> crearPedido();
+                    case 3 -> actualizarEstado();
+                    case 4 -> actualizarFormaPago();
+                    case 5 -> eliminarPedido();
+                    case 0 -> System.out.println("Volviendo al menú principal...");
+                    default -> System.out.println("Opción inválida.");
+                }
+            } catch (ErrorAplicacion | ErrorBaseDatos e) {
+                System.out.println("Error: " + e.getMessage());
             }
 
         } while (opcion != 0);
@@ -66,7 +75,48 @@ public class MenuPedido {
     }
 
     private void crearPedido() {
-        System.out.println("Crear pedido: pendiente de integrar con Usuario y Producto.");
+        System.out.print("Ingrese ID del usuario: ");
+        Long usuarioId = leerLong();
+        if (usuarioId == null) {
+            System.out.println("ID inválido.");
+            return;
+        }
+
+        FormaPago formaPago = seleccionarFormaPago();
+        if (formaPago == null) {
+            System.out.println("Forma de pago inválida.");
+            return;
+        }
+
+        List<Long> productosId = new ArrayList<>();
+        List<Integer> cantidades = new ArrayList<>();
+        boolean agregarOtro;
+
+        do {
+            System.out.print("Ingrese ID del producto: ");
+            Long productoId = leerLong();
+            if (productoId == null) {
+                System.out.println("ID inválido.");
+                return;
+            }
+
+            System.out.print("Ingrese cantidad: ");
+            int cantidad = leerEntero();
+            if (cantidad <= 0) {
+                System.out.println("La cantidad debe ser mayor a cero.");
+                return;
+            }
+
+            productosId.add(productoId);
+            cantidades.add(cantidad);
+
+            System.out.print("Agregar otro producto? (S/N): ");
+            agregarOtro = scanner.nextLine().trim().equalsIgnoreCase("S");
+        } while (agregarOtro);
+
+        Pedido pedido = servicioPedido.crearPedido(usuarioId, formaPago, productosId, cantidades);
+        System.out.println("Pedido creado correctamente. ID generado: " + pedido.getId());
+        System.out.println("Total: " + pedido.getTotal());
     }
 
     private void actualizarEstado() {
@@ -100,21 +150,13 @@ public class MenuPedido {
         System.out.print("Ingrese ID del pedido: ");
         Long id = leerLong();
 
-        System.out.println("Seleccione nueva forma de pago:");
-        FormaPago[] formasPago = FormaPago.values();
-
-        for (int i = 0; i < formasPago.length; i++) {
-            System.out.println((i + 1) + ". " + formasPago[i]);
-        }
-
-        int opcion = leerEntero();
-
-        if (opcion < 1 || opcion > formasPago.length) {
+        FormaPago formaPago = seleccionarFormaPago();
+        if (formaPago == null) {
             System.out.println("Forma de pago inválida.");
             return;
         }
 
-        boolean actualizado = servicioPedido.actualizarFormaPago(id, formasPago[opcion - 1]);
+        boolean actualizado = servicioPedido.actualizarFormaPago(id, formaPago);
 
         if (actualizado) {
             System.out.println("Forma de pago actualizada correctamente.");
@@ -147,5 +189,22 @@ public class MenuPedido {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    private FormaPago seleccionarFormaPago() {
+        System.out.println("Seleccione forma de pago:");
+        FormaPago[] formasPago = FormaPago.values();
+
+        for (int i = 0; i < formasPago.length; i++) {
+            System.out.println((i + 1) + ". " + formasPago[i]);
+        }
+
+        int opcion = leerEntero();
+
+        if (opcion < 1 || opcion > formasPago.length) {
+            return null;
+        }
+
+        return formasPago[opcion - 1];
     }
 }
