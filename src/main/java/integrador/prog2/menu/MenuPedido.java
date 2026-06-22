@@ -55,7 +55,7 @@ public class MenuPedido {
 
     private int leerEntero() {
         try {
-            return Integer.parseInt(scanner.nextLine());
+            return Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
             return -1;
         }
@@ -185,7 +185,7 @@ public class MenuPedido {
 
     private Long leerLong() {
         try {
-            return Long.parseLong(scanner.nextLine());
+            return Long.parseLong(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
             return null;
         }
