@@ -7,11 +7,17 @@ import java.util.Scanner;
 public class AppMenu {
 
     private final Scanner scanner;
+    private final MenuCategoria menuCategoria;
+    private final MenuProducto menuProducto;
+    private final MenuUsuario menuUsuario;
     private final MenuPedido menuPedido;
 
     public AppMenu() {
         this.scanner = new Scanner(System.in);
         ServicioPedido servicioPedido = new ServicioPedido();
+        this.menuCategoria = new MenuCategoria(scanner);
+        this.menuProducto = new MenuProducto(scanner);
+        this.menuUsuario = new MenuUsuario(scanner);
         this.menuPedido = new MenuPedido(scanner, servicioPedido);
     }
 
@@ -30,9 +36,9 @@ public class AppMenu {
             opcion = leerEntero();
 
             switch (opcion) {
-                case 1 -> System.out.println("Menú Categorías pendiente de integrar.");
-                case 2 -> System.out.println("Menú Productos pendiente de integrar.");
-                case 3 -> System.out.println("Menú Usuarios pendiente de integrar.");
+                case 1 -> menuCategoria.mostrar();
+                case 2 -> menuProducto.mostrar();
+                case 3 -> menuUsuario.mostrar();
                 case 4 -> menuPedido.mostrarMenu();
                 case 0 -> System.out.println("Saliendo del sistema...");
                 default -> System.out.println("Opción inválida.");
