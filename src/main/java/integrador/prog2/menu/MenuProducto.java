@@ -1,5 +1,6 @@
 package integrador.prog2.menu;
 
+import integrador.prog2.entities.Categoria;
 import integrador.prog2.entities.Producto;
 import integrador.prog2.exception.ErrorAplicacion;
 import integrador.prog2.exception.ErrorBaseDatos;
@@ -65,8 +66,13 @@ public class MenuProducto {
         int stock = Integer.parseInt(scanner.nextLine());
         System.out.print("Imagen: ");
         String imagen = scanner.nextLine();
+        System.out.print("ID de categoría: ");
+        long categoriaId = Long.parseLong(scanner.nextLine());
 
-        Producto producto = new Producto(nombre, precio, descripcion, stock, imagen, null);
+        Categoria categoria = new Categoria();
+        categoria.setId(categoriaId);
+
+        Producto producto = new Producto(nombre, precio, descripcion, stock, imagen, categoria);
         servicioProducto.crear(producto);
         System.out.println("Producto creado con ID: " + producto.getId());
     }

@@ -13,7 +13,7 @@ import java.util.Optional;
 public class UsuarioDAO implements IBaseDAO<Usuario> {
 
     private static final String SELECT_BASE = """
-            SELECT id, nombre, apellido, mail, celular, contrasena, rol, eliminado, created_at
+            SELECT id, nombre, apellido, mail, celular, contrasenia, rol, eliminado, created_at
             FROM usuario
             """;
 
@@ -57,7 +57,7 @@ public class UsuarioDAO implements IBaseDAO<Usuario> {
     @Override
     public Usuario save(Usuario usuario) {
         String sql = """
-                INSERT INTO usuario (nombre, apellido, mail, celular, contrasena, rol)
+                INSERT INTO usuario (nombre, apellido, mail, celular, contrasenia, rol)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
@@ -89,7 +89,7 @@ public class UsuarioDAO implements IBaseDAO<Usuario> {
     public void update(Usuario usuario) {
         String sql = """
                 UPDATE usuario
-                SET nombre = ?, apellido = ?, mail = ?, celular = ?, contrasena = ?, rol = ?
+                SET nombre = ?, apellido = ?, mail = ?, celular = ?, contrasenia = ?, rol = ?
                 WHERE id = ? AND eliminado = FALSE
                 """;
 
@@ -138,7 +138,7 @@ public class UsuarioDAO implements IBaseDAO<Usuario> {
         usuario.setApellido(rs.getString("apellido"));
         usuario.setMail(rs.getString("mail"));
         usuario.setCelular(rs.getString("celular"));
-        usuario.setContrasena(rs.getString("contrasena"));
+        usuario.setContrasena(rs.getString("contrasenia"));
         usuario.setRol(Rol.valueOf(rs.getString("rol")));
         usuario.setEliminado(rs.getBoolean("eliminado"));
         return usuario;

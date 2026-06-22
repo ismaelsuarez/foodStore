@@ -143,6 +143,11 @@ public class ProductoDAO implements IBaseDAO<Producto> {
         producto.setImagen(rs.getString("imagen"));
         producto.setDisponible(rs.getBoolean("disponible"));
         producto.setEliminado(rs.getBoolean("eliminado"));
+
+        Categoria categoria = new Categoria();
+        categoria.setId(rs.getLong("categoria_id"));
+        producto.setCategoria(categoria);
+
         return producto;
     }
 }
