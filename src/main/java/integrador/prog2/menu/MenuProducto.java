@@ -59,15 +59,15 @@ public class MenuProducto {
         System.out.print("Nombre: ");
         String nombre = scanner.nextLine();
         System.out.print("Precio: ");
-        double precio = Double.parseDouble(scanner.nextLine());
+        double precio = Double.parseDouble(scanner.nextLine().trim());
         System.out.print("Descripción: ");
         String descripcion = scanner.nextLine();
         System.out.print("Stock: ");
-        int stock = Integer.parseInt(scanner.nextLine());
+        int stock = Integer.parseInt(scanner.nextLine().trim());
         System.out.print("Imagen: ");
         String imagen = scanner.nextLine();
         System.out.print("ID de categoría: ");
-        long categoriaId = Long.parseLong(scanner.nextLine());
+        long categoriaId = Long.parseLong(scanner.nextLine().trim());
 
         Categoria categoria = new Categoria();
         categoria.setId(categoriaId);
@@ -79,7 +79,7 @@ public class MenuProducto {
 
     private void editar() {
         System.out.print("ID del producto a editar: ");
-        long id = Long.parseLong(scanner.nextLine());
+        long id = Long.parseLong(scanner.nextLine().trim());
         Producto producto = servicioProducto.listar().stream()
                 .filter(p -> p.getId().equals(id))
                 .findFirst()
@@ -88,9 +88,9 @@ public class MenuProducto {
         System.out.print("Nuevo nombre (actual: " + producto.getNombre() + "): ");
         producto.setNombre(scanner.nextLine());
         System.out.print("Nuevo precio (actual: " + producto.getPrecio() + "): ");
-        producto.setPrecio(Double.parseDouble(scanner.nextLine()));
+        producto.setPrecio(Double.parseDouble(scanner.nextLine().trim()));
         System.out.print("Nuevo stock (actual: " + producto.getStock() + "): ");
-        producto.setStock(Integer.parseInt(scanner.nextLine()));
+        producto.setStock(Integer.parseInt(scanner.nextLine().trim()));
 
         servicioProducto.editar(producto);
         System.out.println("Producto actualizado.");
@@ -98,7 +98,7 @@ public class MenuProducto {
 
     private void eliminar() {
         System.out.print("ID del producto a eliminar: ");
-        long id = Long.parseLong(scanner.nextLine());
+        long id = Long.parseLong(scanner.nextLine().trim());
         if (servicioProducto.eliminar(id)) {
             System.out.println("Producto eliminado.");
         } else {
@@ -108,7 +108,7 @@ public class MenuProducto {
 
     private int leerEntero() {
         try {
-            return Integer.parseInt(scanner.nextLine());
+            return Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
             return -1;
         }

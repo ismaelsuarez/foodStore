@@ -76,7 +76,7 @@ public class MenuUsuario {
 
     private void editar() {
         System.out.print("ID del usuario a editar: ");
-        long id = Long.parseLong(scanner.nextLine());
+        long id = Long.parseLong(scanner.nextLine().trim());
         Usuario usuario = servicioUsuario.listar().stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst()
@@ -95,7 +95,7 @@ public class MenuUsuario {
 
     private void eliminar() {
         System.out.print("ID del usuario a eliminar: ");
-        long id = Long.parseLong(scanner.nextLine());
+        long id = Long.parseLong(scanner.nextLine().trim());
         if (servicioUsuario.eliminar(id)) {
             System.out.println("Usuario eliminado.");
         } else {
@@ -105,7 +105,7 @@ public class MenuUsuario {
 
     private int leerEntero() {
         try {
-            return Integer.parseInt(scanner.nextLine());
+            return Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
             return -1;
         }

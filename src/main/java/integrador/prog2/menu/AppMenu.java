@@ -49,7 +49,7 @@ public class AppMenu {
 
     private int leerEntero() {
         try {
-            return Integer.parseInt(scanner.nextLine());
+            return Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
             return -1;
         }
