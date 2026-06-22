@@ -3,6 +3,64 @@
 Trabajo Práctico Integrador - Programación 2  
 Tecnicatura Universitaria en Programación a Distancia - UTN FRM
 
+## Guía rápida de uso
+
+> Leer esta sección antes de ejecutar el proyecto. Primero se debe crear la base
+> de datos con el script SQL y luego iniciar la aplicación desde la clase `Main`.
+
+### 1. Iniciar MySQL
+
+Antes de ejecutar la aplicación, MySQL debe estar iniciado. Si se usa XAMPP, se
+debe encender el servicio **MySQL** desde el panel de control.
+
+### 2. Crear la base de datos
+
+Desde la raíz del proyecto, ejecutar el script:
+
+```bash
+mysql --default-character-set=utf8mb4 -u root -p < src/main/resources/schema.sql
+```
+
+Si se usa XAMPP en Windows y el usuario `root` no tiene contraseña, se puede
+ejecutar:
+
+```powershell
+& "C:\xampp\mysql\bin\mysql.exe" --default-character-set=utf8mb4 -u root < "src\main\resources\schema.sql"
+```
+
+El script crea:
+
+- La base de datos `pedidos_db`.
+- Las tablas necesarias del sistema.
+- Datos iniciales de prueba.
+- El usuario `foodstore_user` con contraseña `foodstore123`.
+
+Las credenciales creadas por el script son las mismas que utiliza el proyecto en
+la configuración de conexión.
+
+### 3. Compilar el proyecto
+
+```bash
+mvn clean compile
+```
+
+### 4. Ejecutar la aplicación
+
+Desde IntelliJ IDEA, abrir y ejecutar:
+
+```text
+src/main/java/integrador/prog2/Main.java
+```
+
+También se puede ejecutar por consola:
+
+```bash
+mvn exec:java -Dexec.mainClass="integrador.prog2.Main"
+```
+
+Al iniciar, se muestra el menú principal para acceder a categorías, productos,
+usuarios y pedidos.
+
 ## Descripción
 
 Food Store es una aplicación de consola desarrollada en Java para la gestión de
@@ -66,7 +124,11 @@ foodStore/
 ├── README.md
 └── src/
     ├── docs/
-    │   └── Consigna y pautas de corrección
+    │   ├── presentacion/
+    │   │   └── presentacion_foodStore.pdf
+    │   └── tp_consignas/
+    │       ├── Consigna_TPI_Prog-2_2026.pdf
+    │       └── PAUTAS DE CORRECCION DE TPI.pdf
     └── main/
         ├── java/integrador/prog2/
         │   ├── Main.java
@@ -79,6 +141,10 @@ foodStore/
         └── resources/
             └── schema.sql
 ```
+
+La carpeta `src/docs/tp_consignas` contiene la consigna y las pautas de
+corrección del trabajo práctico. La carpeta `src/docs/presentacion` contiene el
+PDF utilizado como presentación del proyecto.
 
 ## Arquitectura
 
@@ -226,3 +292,17 @@ editar y eliminar registros.
 - Las eliminaciones deben realizarse mediante baja lógica.
 - Las operaciones de pedido con detalles deben mantener consistencia transaccional.
 
+## Datos de la cátedra
+
+**Profesores:**
+
+- Cinthia Rigoni Guerra
+- Ramiro Hualpa
+
+**Alumnos:**
+
+- Blangetti Sofía
+- Avalos Pablo
+- Suárez Ismael
+
+**Tecnicatura Universitaria en Programación 2026**
