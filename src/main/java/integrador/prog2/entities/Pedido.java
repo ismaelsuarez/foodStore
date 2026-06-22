@@ -2,8 +2,6 @@ package integrador.prog2.entities;
 
 import integrador.prog2.enums.Estado;
 import integrador.prog2.enums.FormaPago;
-import integrador.prog2.entities.Calculable;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -13,6 +11,7 @@ public class Pedido extends Base implements Calculable {
     private Estado estado;
     private Double total;
     private FormaPago formaPago;
+    private Usuario usuario;
     private ArrayList<DetallePedido> detallesPedido;
 
     public Pedido(FormaPago formaPago) {
@@ -22,6 +21,11 @@ public class Pedido extends Base implements Calculable {
         this.total = 0.0;
         this.formaPago = formaPago;
         this.detallesPedido = new ArrayList<>();
+    }
+
+    public Pedido(Usuario usuario, FormaPago formaPago) {
+        this(formaPago);
+        this.usuario = usuario;
     }
 
 
@@ -78,7 +82,7 @@ public class Pedido extends Base implements Calculable {
             return;
         }
 
-        detallesPedido.removeIf(detalle -> detalle.getId().equals(id.longValue()));
+        detallesPedido.removeIf(detalle -> detalle.getId() != null && detalle.getId().equals(id.longValue()));
 
         calcularTotal();
         validarPedido();
@@ -131,8 +135,16 @@ public class Pedido extends Base implements Calculable {
         return formaPago;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
     public ArrayList<DetallePedido> getDetallesPedido() {
         return detallesPedido;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public void setEstado(Estado estado) {
@@ -145,6 +157,23 @@ public class Pedido extends Base implements Calculable {
 
     public void setTotal(Double total) {
         this.total = total;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + getId() +
+                ", fecha=" + fecha +
+                ", estado=" + estado +
+                ", total=" + total +
+                ", formaPago=" + formaPago +
+                ", usuarioId=" + (usuario != null ? usuario.getId() : null) +
+                ", detalles=" + detallesPedido.size() +
+                '}';
     }
 }
 

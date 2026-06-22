@@ -6,6 +6,13 @@ public class DetallePedido extends Base {
     private Double subtotal;
     private Boolean valido;
     private Producto producto;
+    private Long pedidoId;
+
+    public DetallePedido() {
+        super();
+        this.subtotal = 0.0;
+        this.valido = true;
+    }
 
     public DetallePedido(Integer cantidad, Producto producto) {
         super();
@@ -58,6 +65,10 @@ public class DetallePedido extends Base {
         return producto;
     }
 
+    public Long getPedidoId() {
+        return pedidoId;
+    }
+
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
@@ -74,6 +85,10 @@ public class DetallePedido extends Base {
         this.producto = producto;
     }
 
+    public void setPedidoId(Long pedidoId) {
+        this.pedidoId = pedidoId;
+    }
+
     @Override
     public String toString() {
         return "DetallePedido{" +
@@ -81,6 +96,7 @@ public class DetallePedido extends Base {
                 ", cantidad=" + cantidad +
                 ", subtotal=" + subtotal +
                 ", valido=" + valido +
+                ", pedidoId=" + pedidoId +
                 ", producto=" + producto +
                 '}';
     }
